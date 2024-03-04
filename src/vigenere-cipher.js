@@ -20,13 +20,54 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(isBackwards = true) {
+    this.isBackwards = isBackwards;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  encrypt(string, key) {
+    return this.process(string, key, true);
+  }
+  decrypt(string, key) {
+    return this.process(string, key, false);
+  }
+  process(string, key, isEncrypt) {
+    if (!string || !key) {
+      throw new Error("Incorrect arguments!");
+    }
+    string = string.toUpperCase();
+    key = this.generateKey(string, key);
+    let result = "";
+    for (let i = 0; i < string.length; i++) {
+      if (string[i].match(/[A-Z]/)) {
+        const symbol = string.charCodeAt(i) - 65;
+        const symbolKey = key.charCodeAt(i) - 65;
+        let processedChar;
+        if (isEncrypt) {
+          processedChar = ((symbol + symbolKey) % 26) + 65;
+        } else {
+          processedChar = ((symbol - symbolKey + 26) % 26) + 65;
+        }
+        result = result + String.fromCharCode(processedChar);
+      } else {
+        result = result + string[i];
+      }
+    }
+     if(this.isBackwards){
+     return result
+    } else{
+     return result.split("").reverse().join("")};
+  }
+  generateKey(string, key) {
+    // const keyLength = key.length;
+    let codeKey = "";
+    for (let i = 0, j = 0; i < string.length; i++) {
+      if (string[i].match(/[A-Z]/)) {
+        codeKey = codeKey + key[j % key.length].toUpperCase();
+        j++;
+      } else {
+        codeKey = codeKey + string[i];
+      }
+    }
+    return codeKey;
   }
 }
 
